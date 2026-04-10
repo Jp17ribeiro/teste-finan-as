@@ -1,8 +1,4 @@
 {
-  "buildCommand": "echo 'Static site'",
-  "outputDirectory": ".",
-  "framework": "html",
-  "requestId": "default",
   "headers": [
     {
       "source": "/(.*)",
@@ -12,6 +8,12 @@
           "value": "public, max-age=3600"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
     }
   ]
 }
