@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOME DA SUA EMPRESA | Gestão Financeira</title>
+
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
+
+  <div id="loginScreen" class="auth-shell">
+    <section class="auth-card">
+      <div class="brand-lockup">
+        <div class="brand-mark login-mark" aria-label="Símbolo financeiro da empresa">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="4" />
+            <path d="M32 18v28" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+            <path d="M41 24c0-3.3-4-6-9-6s-9 2.7-9 6 3 5 9 6 9 2.7 9 6-4 6-9 6-9-2.7-9-6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div>
+          <p class="eyebrow">NOME DA SUA EMPRESA</p>
+          <h1>Gestão Financeira</h1>
+          <p class="muted">Acesso restrito para controle financeiro da empresa.</p>
+        </div>
+      </div>
+
+      <form id="loginForm" class="auth-form" autocomplete="off">
+        <div class="field">
+          <label for="username">Nome de usuário</label>
+          <input id="username" type="text" placeholder="Digite seu usuário" required />
+        </div>
+
+        <div class="field">
+          <label for="password">Senha</label>
+          <input id="password" type="password" placeholder="Digite sua senha" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Entrar com segurança</button>
+      </form>
+    </section>
+  </div>
+
+  <div id="appShell" class="dashboard hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="brand-inline">
+          <div class="brand-mark small" aria-hidden="true">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="4"/>
+              <path d="M32 18v28" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+              <path d="M41 24c0-3.3-4-6-9-6s-9 2.7-9 6 3 5 9 6 9 2.7 9 6-4 6-9 6-9-2.7-9-6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h2>NOME DA SUA EMPRESA</h2>
+            <p id="companyLabel">NOME DA SUA EMPRESA</p>
+          </div>
+        </div>
+
+        <button class="icon-btn" id="closeSidebarBtn" aria-label="Fechar menu">✕</button>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="dashboardView">Dashboard</button>
+        <button class="nav-item" data-view="receitasView">Entradas</button>
+        <button class="nav-item" data-view="despesasView">Despesas</button>
+        <button class="nav-item" data-view="relatoriosView">Relatórios</button>
+        <button class="nav-item" data-view="metasView">Metas</button>
+        <button class="nav-item admin-only" data-view="usuariosView">Usuários</button>
+        <button class="nav-item admin-only" data-view="configView">Configurações</button>
+      </nav>
+
+      <div class="sidebar-meta">
+        <div class="header-card">
+          <span class="label">Competência</span>
+          <input type="month" id="monthFilter" />
+        </div>
+
+        <div class="header-card">
+          <span class="label">Atualizado</span>
+          <strong id="lastUpdated">agora</strong>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-mini">
+          <div class="avatar" id="userInitials">A</div>
+          <div>
+            <p id="userName">Usuário</p>
+            <span id="userRole">Perfil</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-block" id="logoutBtn">Sair</button>
+      </div>
+    </aside>
+
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <header class="header">
+      <div class="header-left">
+        <button class="icon-btn" id="openSidebarBtn" aria-label="Abrir menu">☰</button>
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="icon-btn" data-theme-toggle aria-label="Alternar tema">☾</button>
+      </div>
+    </header>
+
+    <main class="main" id="conteudo">
+      <section id="dashboardView" class="view active">
+        <div class="hero-strip">
+          <div>
+            <p class="eyebrow">NOME DA SUA EMPRESA</p>
+            <h2 class="section-title">Painel financeiro da empresa</h2>
+            <p class="muted">Acompanhe entradas, despesas e metas da empresa.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="quickRevenueBtn">Nova entrada</button>
+            <button class="btn btn-secondary" id="quickExpenseBtn">Nova despesa</button>
+          </div>
+        </div>
+
+        <section class="kpi-grid">
+          <article class="card kpi-card">
+            <span class="kpi-label">Entradas do mês</span>
+            <strong class="kpi-value" id="kpiRevenue">R$ 0,00</strong>
+            <span class="kpi-delta positive" id="kpiRevenueDelta">0%</span>
+          </article>
+
+          <article class="card kpi-card">
+            <span class="kpi-label">Despesas do mês</span>
+            <strong class="kpi-value" id="kpiExpense">R$ 0,00</strong>
+            <span class="kpi-delta negative" id="kpiExpenseDelta">0%</span>
+          </article>
+
+          <article class="card kpi-card">
+            <span class="kpi-label">Saldo do mês</span>
+            <strong class="kpi-value" id="kpiBalance">R$ 0,00</strong>
+            <span class="kpi-delta neutral" id="kpiBalanceStatus">Sem movimento</span>
+          </article>
+
+          <article class="card kpi-card">
+            <span class="kpi-label">Meta atingida</span>
+            <strong class="kpi-value" id="kpiGoal">0%</strong>
+            <span class="kpi-delta neutral" id="kpiGoalLabel">Sem meta</span>
+          </article>
+        </section>
+
+        <section class="chart-grid">
+          <article class="card chart-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Tendência</p>
+                <h3>Entradas x despesas</h3>
+              </div>
+            </div>
+            <canvas id="lineChart"></canvas>
+          </article>
+
+          <article class="card chart-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Categorias</p>
+                <h3>Despesas por categoria</h3>
+              </div>
+            </div>
+            <canvas id="expenseChart"></canvas>
+          </article>
+        </section>
+
+        <section class="grid-2">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Movimentações</p>
+                <h3>Últimos lançamentos</h3>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                  </tr>
+                </thead>
+                <tbody id="latestTransactionsTable"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Metas</p>
+                <h3>Status mensal</h3>
+              </div>
+            </div>
+            <div id="goalStatusList" class="goal-list"></div>
+          </article>
+        </section>
+      </section>
+
+      <section id="receitasView" class="view">
+        <div class="section-shell">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Lançamentos</p>
+              <h2 class="section-title">Cadastro de entradas</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Nova entrada</h3>
+              <form id="revenueForm" class="form-grid">
+                <div class="field">
+                  <label for="revenueDate">Data</label>
+                  <input id="revenueDate" type="date" required />
+                </div>
+                <div class="field">
+                  <label for="revenueCategory">Categoria</label>
+                  <select id="revenueCategory" required></select>
+                </div>
+                <div class="field field-full">
+                  <label for="revenueDescription">Descrição</label>
+                  <input id="revenueDescription" type="text" placeholder="Ex: Recebimento de cliente" required />
+                </div>
+                <div class="field">
+                  <label for="revenueAmount">Valor</label>
+                  <input id="revenueAmount" type="number" min="0" step="0.01" required />
+                </div>
+                <div class="field">
+                  <label for="revenueUser">Responsável</label>
+                  <input id="revenueUser" type="text" readonly />
+                </div>
+                <button type="submit" class="btn btn-primary field-full">Salvar entrada</button>
+              </form>
+            </article>
+
+            <article class="card">
+              <h3>Entradas cadastradas</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Categoria</th>
+                      <th>Descrição</th>
+                      <th>Valor</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="revenuesTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="despesasView" class="view">
+        <div class="section-shell">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Lançamentos</p>
+              <h2 class="section-title">Cadastro de despesas</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Nova despesa</h3>
+              <form id="expenseForm" class="form-grid">
+                <div class="field">
+                  <label for="expenseDate">Data</label>
+                  <input id="expenseDate" type="date" required />
+                </div>
+                <div class="field">
+                  <label for="expenseCategory">Categoria</label>
+                  <select id="expenseCategory" required></select>
+                </div>
+                <div class="field field-full">
+                  <label for="expenseDescription">Descrição</label>
+                  <input id="expenseDescription" type="text" placeholder="Ex: Compra de material elétrico" required />
+                </div>
+                <div class="field">
+                  <label for="expenseAmount">Valor</label>
+                  <input id="expenseAmount" type="number" min="0" step="0.01" required />
+                </div>
+                <div class="field">
+                  <label for="expenseUser">Responsável</label>
+                  <input id="expenseUser" type="text" readonly />
+                </div>
+                <button type="submit" class="btn btn-primary field-full">Salvar despesa</button>
+              </form>
+            </article>
+
+            <article class="card">
+              <h3>Despesas cadastradas</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Categoria</th>
+                      <th>Descrição</th>
+                      <th>Valor</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expensesTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="relatoriosView" class="view">
+        <div class="section-shell">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Histórico</p>
+              <h2 class="section-title">Relatórios financeiros</h2>
+            </div>
+            <div class="action-row">
+              <button class="btn btn-secondary" id="exportCsvBtn">Exportar CSV</button>
+              <button class="btn btn-primary" id="printPdfBtn">Exportar PDF</button>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card report-stat">
+              <span>Total anual de entradas</span>
+              <strong id="annualRevenue">R$ 0,00</strong>
+            </article>
+            <article class="card report-stat">
+              <span>Total anual de despesas</span>
+              <strong id="annualExpense">R$ 0,00</strong>
+            </article>
+            <article class="card report-stat">
+              <span>Resultado anual</span>
+              <strong id="annualBalance">R$ 0,00</strong>
+            </article>
+          </div>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Resumo</p>
+                <h3>Comparativo mensal</h3>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mês</th>
+                    <th>Entradas</th>
+                    <th>Despesas</th>
+                    <th>Saldo</th>
+                    <th>Meta</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="reportTable"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="metasView" class="view">
+        <div class="section-shell">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Planejamento</p>
+              <h2 class="section-title">Metas financeiras</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Nova meta mensal</h3>
+              <form id="goalForm" class="form-grid">
+                <div class="field">
+                  <label for="goalMonth">Mês</label>
+                  <input id="goalMonth" type="month" required />
+                </div>
+                <div class="field">
+                  <label for="goalType">Tipo</label>
+                  <select id="goalType" required>
+                    <option value="revenue">Entrada</option>
+                    <option value="expenseLimit">Limite de despesa</option>
+                    <option value="balance">Saldo mínimo</option>
+                  </select>
+                </div>
+                <div class="field field-full">
+                  <label for="goalTitle">Título</label>
+                  <input id="goalTitle" type="text" placeholder="Ex: Fechar contratos acima de R$ 80.000" required />
+                </div>
+                <div class="field">
+                  <label for="goalValue">Valor</label>
+                  <input id="goalValue" type="number" min="0" step="0.01" required />
+                </div>
+                <button type="submit" class="btn btn-primary field-full">Salvar meta</button>
+              </form>
+            </article>
+
+            <article class="card">
+              <h3>Metas cadastradas</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mês</th>
+                      <th>Título</th>
+                      <th>Tipo</th>
+                      <th>Valor</th>
+                      <th>Status</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="goalsTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="usuariosView" class="view">
+        <div class="section-shell">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Permissões</p>
+              <h2 class="section-title">Gestão de usuários</h2>
+            </div>
+          </div>
+
+          <article class="card">
+            <div class="stack-text">
+              <p>O cadastro de novos usuários deve ser feito diretamente no banco de dados.</p>
+              <p>Esta área mostra apenas os usuários já cadastrados no sistema.</p>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Usuário</th>
+                    <th>Perfil</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="configView" class="view">
+        <div class="section-shell">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Sistema</p>
+              <h2 class="section-title">Configurações gerais</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Empresa</h3>
+              <form id="companyForm" class="form-grid">
+                <div class="field field-full">
+                  <label for="companyName">Nome da empresa</label>
+                  <input id="companyName" type="text" />
+                </div>
+                <div class="field">
+                  <label for="companyCurrency">Moeda</label>
+                  <select id="companyCurrency">
+                    <option value="BRL">BRL - Real</option>
+                    <option value="USD">USD - Dólar</option>
+                    <option value="EUR">EUR - Euro</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary field-full">Salvar configurações</button>
+              </form>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="./js/config/supabase-config.js"></script>
+  <script src="./js/services/supabase-client.js"></script>
+  <script src="./js/services/finance-db.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
